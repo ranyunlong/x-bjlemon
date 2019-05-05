@@ -1,26 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.less';
+import  { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
+import React, { Component } from 'react';
+import Login from './pages/Login';
 
-const App: React.FC = () => {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+type Prop = {}
+
+type State = Readonly<{}>
+
+class App extends Component<Prop, State> {
+
+    readonly state: State = {}
+
+    render() {
+        return (
+            <BrowserRouter>
+                <div className={'app'}>
+                    <Switch>
+                        {/* <Redirect exact path="/" to={'/x/'}  /> */}
+                        <Redirect exact path="/" to={'/login.html'} />
+                        <Route exact path={'/login.html'} component={Login} />
+                        {/* <Route path={'/x/'} component={XSystemIndex} />
+                        <Route exact path={'/login.html'} component={Login} />
+                        <Route exact path={'/forgetPassword.html'} component={ForgetPassword} />
+                        <Route exact path={'/register.html'} component={Register} />
+                        <Route exact path={'/404.html'} component={NotFound} />
+                        <Redirect to={'/404.html'} /> */}
+                    </Switch>
+                </div> 
+            </BrowserRouter>
+        )
+    }
+
 }
 
-export default App;
+export default App
