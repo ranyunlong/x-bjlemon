@@ -1,5 +1,9 @@
 import { http } from "./base";
 
+/**
+ * 更新学生列表
+ * @param data 
+ */
 export function updateStudentJournal(data: UpdataStudentJournalParmas){
     return http.post<UpdataStudentJournalData>('/journal/update.action', data)
 

@@ -1,3 +1,6 @@
+/**
+ * 系统信息store
+ */
 import { xSystemActionTypes, XSystemAction, TabPane } from "./action";
 
 const initState: XSystemState = {

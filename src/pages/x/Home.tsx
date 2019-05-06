@@ -4,7 +4,7 @@ import './Home.less';
 import { Location, History } from 'history';
 import { UserState } from '../../store/reducers/user';
 import { connect } from 'react-redux';
-import { getUserMenu } from '../../api/getMenu';
+import { getUserMenu, MenuInfo } from '../../api/getMenu';
 import { deepMenu, MenuInfoChange } from '../../utils/deepMenu';
 import { SetUserAccessAction, LogoutAction } from '../../store/reducers/user/action';
 import { Switch, Route, Redirect } from 'react-router';
@@ -31,7 +31,8 @@ interface IHomeProps {
 interface IHomeState {
 	menuList: MenuInfoChange[];
 	openKeys: string[];
-	selectedKeys: string[];
+    selectedKeys: string[];
+    originMenuList: MenuInfo[];
 }
 
 class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
@@ -39,9 +40,13 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 	public state: Readonly<IHomeState> = {
 		menuList: [],
 		openKeys: [],
-		selectedKeys: []
+        selectedKeys: [],
+        originMenuList: []
 	}
 
+    /**
+     * 渲染左侧菜单
+     */
 	public renderMenu(menuList: MenuInfoChange[]) {
 		if (Array.isArray(menuList)) {
 			return menuList.map(item => {
@@ -59,7 +64,7 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 					return (
 						<Menu.Item
 							onClick={() => {
-								const url = `/x/${item.relUrl}.shtml`;
+                                const url = `/x/${item.relUrl}.shtml`;
 								const find = this.props.panes.find(ite => ite.url === url)
 								if (!find) {
 									this.props.setPanes([...this.props.panes, {
@@ -175,8 +180,9 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 										exact
 										path="/x/student/opStuList.action.shtml"
 										render={(props) => {
+                                            const { pathname } = props.location
 											return (
-												<KeepAlive name="StudentList">
+												<KeepAlive name={pathname} disabled={!this.props.panes.find(item => item.url === pathname)}>
 													<StudentList {...props} />
 												</KeepAlive>
 											)
@@ -186,8 +192,9 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 										exact
 										path="/x/class/opClassManager_my.action.shtml"
 										render={(props) => {
+                                            const { pathname } = props.location
 											return (
-												<KeepAlive name="ClassList">
+												<KeepAlive name={pathname} disabled={!this.props.panes.find(item => item.url === pathname)}>
 													<ClassList {...props} />
 												</KeepAlive>
 											)
@@ -197,9 +204,10 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 										exact
 										path="/x/journal/opJouranlList_my.action.shtml"
 										render={(props) => {
+                                            const { pathname, search } = props.location
 											return (
-												<KeepAlive name="JournalList">
-													<JournalList {...props} />
+												<KeepAlive name={pathname + search} disabled={!this.props.panes.find(item => item.url === pathname + search)}>
+													<JournalList {...props}/>
 												</KeepAlive>
 											)
 										}}	
@@ -227,7 +235,19 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 
 		this.props.setUserAccess()
 		this.getMenuList()
-	}
+    }
+    
+    public componentDidUpdate(prevProps: IHomeProps) {
+        if (this.props.activePane !== prevProps.activePane) {
+            const find = this.state.originMenuList.find(item => `/x/${item.relUrl}.shtml` === this.props.location.pathname)
+            if (find) {
+                this.setState({
+                    selectedKeys: [find.id.toString()],
+                    openKeys: [String(find.pId), find.id.toString()]
+                })
+            }
+        }
+    }
 
 	public shouldComponentUpdate(nextProps: IHomeProps) {
 		if (!nextProps.user.lemon_sso_sessionid) {
@@ -237,10 +257,14 @@ class Home extends React.Component<IHomeProps, Readonly<IHomeState>> {
 		return true;
 	}
 
+    /**
+     * 获取菜单列表
+     */
 	public getMenuList() {
 		getUserMenu().then(res => {
 			this.setState({
-				menuList: deepMenu(null, res.data as any)
+                menuList: deepMenu(null, res.data as any),
+                originMenuList: res.data
 			}, () => {
 				const { pathname } = this.props.location
 				res.data.forEach(item => {

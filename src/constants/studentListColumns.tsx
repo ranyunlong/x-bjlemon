@@ -3,6 +3,10 @@ import { ColumnProps } from "antd/lib/table";
 import { StudentInfo } from "../api/queryStudent";
 import { Button } from "antd";
 
+/**
+ * 学生列表表格项目
+ * @param this
+ */
 export function getStudentListColumns() {
     const studentListColumns: ColumnProps<StudentInfo>[] = [
         {

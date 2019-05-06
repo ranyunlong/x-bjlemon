@@ -1,5 +1,9 @@
 import { http } from "./base";
 
+
+/**
+ * 获取用户信息权限列表
+ */
 export function getUserAction() {
     return http.get<UserAction>('/api/open/getLoginUser.action')
 }

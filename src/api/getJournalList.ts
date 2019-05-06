@@ -1,5 +1,9 @@
 import { http } from "./base";
 
+
+/**
+ * 获取教学日志列表
+ */
 export function getJournalList(query: QueryJournalParams) {
     return  http.post<JournalListData>('/journal/query.action', query)
 }

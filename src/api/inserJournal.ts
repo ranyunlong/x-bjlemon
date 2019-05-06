@@ -1,9 +1,8 @@
 import { http } from "./base";
 
 /**
- * 添加新助教日志
+ * 添加新教学日志
  */
-
 export function inserJournal(data: InserJournalParams) {
     http.post<InserJournalData>('/journal/inserNewJur.action', data)
 }

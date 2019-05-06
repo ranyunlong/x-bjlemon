@@ -2,8 +2,14 @@ import React from 'react';
 import { ColumnProps } from "antd/lib/table";
 import { ClassInfo } from '../api/getClassList';
 import { Divider } from 'antd';
+import { ClassListPage } from '../pages/x/class/ClassList';
 
-export function getClassListColumns() {
+
+/**
+ * 班级列表表格项目
+ * @param this
+ */
+export function getClassListColumns(this: ClassListPage) {
     const classListColumns: ColumnProps<ClassInfo>[] = [
         {
             title: 'id',
@@ -61,17 +67,28 @@ export function getClassListColumns() {
             width: 350,
             fixed: 'right',
             align: 'center',
-            render: () => {
+            render: (text, record) => {
                 return (
                     <div style={{
                         display: 'flex',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
                     }}>
                         <a href="javascript:;">短信提醒</a>
                         <Divider type="vertical" />
                         <a href="javascript:;">学生列表</a>
                         <Divider type="vertical" />
-                        <a href="javascript:;">助教日志</a>
+                        <a onClick={() => {
+                            const url = `/x/journal/opJouranlList_my.action.shtml?classId=${record.classId}&t=${new Date().getTime()}`
+                            this.props.history.push(url)
+                            this.props.panes.push({
+                                title: record.className + `助教日志`,
+                                url: url,
+                                closable: true
+                            })
+
+                            this.props.setPanes(this.props.panes, url);
+                        }} href="javascript:;">助教日志</a>
                         <Divider type="vertical" />
                         <a href="javascript:;">开课</a>
                         <Divider type="vertical" />

@@ -1,5 +1,9 @@
 import { http } from "./base";
 
+/**
+ * 保存教学日志
+ * @param data 
+ */
 export function saveJouranl(data: SaveJouranlParams) {
     return http.post<SaveJouranlData>('/journal/saveJouran.action', data)
 }

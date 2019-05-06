@@ -1,9 +1,9 @@
-/**
- * 获取用户菜单
- */
-
 import { http } from "./base";
 
+
+/**
+ * 获取用户菜单列表
+ */
 export function getUserMenu() {
     return http.get<MenuInfo[]>('/login/loadUserMenus.action')
 }

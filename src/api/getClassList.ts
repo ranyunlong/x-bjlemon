@@ -2,7 +2,7 @@ import { http } from "./base";
 
 
 /**
- * 查询班级列表
+ * 获取班级列表
  * @param params 
  */
 export function getClassList(params: QueryClassParams) {

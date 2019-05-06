@@ -1,7 +1,7 @@
 import { http } from "./base";
 
 /**
- * 查询学生
+ * 查询学生列表
  */
 export function queryStudent(query: QueryStudentParams = {page: 1, rows: 10}) {
     return http.post<QueryStudentResponse>('/student/query.action', query)

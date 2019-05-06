@@ -8,10 +8,16 @@ import { getClassList, ClassInfo } from '../../../api/getClassList';
 import { getUserAction } from '../../../api/getUserAction';
 import { getClassListColumns } from '../../../constants/classListColumns';
 import { span, colStyle } from '../../../constants/searchRowCol';
+import { connect } from 'react-redux';
+import { TabPane, setPanesAction } from '../../../store/reducers/xsystem/action';
+import { Reducers } from '../../../store';
 
 interface IClassListProps {
 	location: Location;
-	history: History;
+    history: History;
+    setPanes(panes: TabPane[], activePane: string): void;
+    panes: TabPane[];
+    activePane: string;
 }
 
 interface IClassListState {
@@ -35,16 +41,14 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 		classList: [],
 	}
 
+    /**
+     * 渲染表格
+     */
 	public renderTable() {
 		const { classList } = this.state;
 		return (
 			<div className="class-list-table">
 				<Table
-					rowSelection={{
-						onChange: (e) => {
-
-						}
-					}}
 					size="small"
 					rowKey="classId"
 					pagination={false}
@@ -126,9 +130,7 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 				{this.renderTable()}
 				<div className="pager">
 					<div className="btns">
-						<Button style={{marginRight: 10}} type="default">批量短信提醒</Button>
-						<Button style={{marginRight: 10}}  type="primary">批量开课</Button>
-						<Button type="danger">批量结课</Button>
+						
 					</div>
 					<Pagination
 						current={this.state.page}
@@ -148,12 +150,18 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 		this.getDatas()
 	}
 
+    /**
+     * 初始请求数据
+     */
 	public async getDatas() {
 		this.getStageList()
 		this.getLecturerList()
 		this.getClassList()
 	}
 
+    /**
+     * 获取讲师列表
+     */
 	public async getLecturerList() {
 		getLecturerList().then(res => {
 			const list: {[key: string]: LecturerInfo[]} = {}
@@ -171,6 +179,9 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 		})
 	}
 
+    /**
+     * 获取阶段列表
+     */
 	public async getStageList() {
 		getStageList().then(res => {
 			this.setState({
@@ -179,6 +190,9 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 		})
 	}
 
+    /**
+     * 获取班级列表
+     */
 	public async getClassList() {
 		const { page, rows } = this.state
 	 	const uAction = await getUserAction()
@@ -195,4 +209,16 @@ class ClassList extends Component<IClassListProps, IClassListState> {
 	}
 }
 
-export default ClassList
+export type ClassListPage = ClassList;
+
+export default connect(
+    (state: Reducers)=> ({
+        panes: state.xSystem.panes,
+        activePane: state.xSystem.activePane
+    }),
+    (dispatch: any) =>({
+        setPanes(panes: TabPane[], activePane: string) {
+			dispatch(new setPanesAction(panes, activePane).getAction())
+		},
+    })
+)(ClassList);

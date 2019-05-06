@@ -1,3 +1,7 @@
+/**
+ * 用户个人信息store
+ */
+
 import { UserAction, UserActionTypes } from "./action";
 import { UserAccess } from "../../../api/getUserAction";
 

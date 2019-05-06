@@ -3,6 +3,10 @@ import { ColumnProps } from "antd/lib/table";
 import { Divider } from 'antd';
 import { JournalInfo } from '../api/getJournalList';
 
+/**
+ * 教学日志列表表格项目
+ * @param this
+ */
 export function getJournalListColumns() {
     const JournalListColumns: ColumnProps<JournalInfo>[] = [
         {
@@ -22,15 +26,15 @@ export function getJournalListColumns() {
         },
         {
             title: '班级名称',
+            width: 160,
             key: 'className',
             align: 'center',
             dataIndex: 'className'
         },
         {
             title: '课程名称',
-            width: 150,
             key: 'skName',
-            align: 'center',
+            align: 'left',
             dataIndex: 'skName'
         },
         {
@@ -57,7 +61,8 @@ export function getJournalListColumns() {
                 return (
                     <div style={{
                         display: 'flex',
-                        justifyContent: 'space-between'
+                        justifyContent: 'space-around',
+                        alignItems: 'center'
                     }}>
                         <a href="javascript:;">编辑</a>
                         <Divider type="vertical" />

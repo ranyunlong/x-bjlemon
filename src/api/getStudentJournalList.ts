@@ -1,5 +1,8 @@
 import { http } from "./base";
 
+/**
+ * 获取学生日志列表
+ */
 export function getStudentJournalList(params: QueryStudentJournalInfoListParams) {
     if (!params.stuId) params.stuId = -1;
     if (typeof params.junCode !== 'number') {

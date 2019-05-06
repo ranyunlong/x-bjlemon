@@ -1,4 +1,8 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+/**
+ * 创建仓库
+ */
+
+ import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { UserState, userReducer } from './reducers/user';
 import promiseMiddleware from 'redux-promise';
 import { xSystemReducer, XSystemState } from './reducers/xsystem';

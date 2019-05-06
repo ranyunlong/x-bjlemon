@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties } from 'react';
+import React, { Component } from 'react';
 import { Layout, Row, Col, Input, Select, Button, Table, Pagination } from 'antd';
 import './Student.less';
 import { Location, History } from 'history';
@@ -25,7 +25,11 @@ class StudentList extends Component<IStudentListProps, Readonly<IStudentListStat
 		page: 1,
 		rows: 20,
 		total: 0,
-	}
+    }
+    
+    /**
+     * 渲染表格
+     */
 	public renderTable() {
 		const { studentList } = this.state
 		return (
@@ -133,6 +137,9 @@ class StudentList extends Component<IStudentListProps, Readonly<IStudentListStat
 		this.getStudentList();
 	}
 
+    /**
+     * 获取学生列表
+     */
 	public getStudentList() {
 		const { page, rows } = this.state
 		this.setState({

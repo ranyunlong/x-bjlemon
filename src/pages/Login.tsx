@@ -1,3 +1,7 @@
+/**
+ * 登录页面
+ */
+
 import React, { Component, FormEvent } from 'react';
 import { Button, Layout, Card, Form, Input } from 'antd';
 import './Login.less';
@@ -95,6 +99,10 @@ class Login extends Component<ILoginProps, Readonly<ILoginState>> {
         );
     }
 
+    /**
+     * 处理登录
+     * @param e
+     */
     public handleLogin(e: FormEvent<HTMLFormElement>) {
         e.preventDefault()
         this.props.form.validateFields((valid, value) => {
