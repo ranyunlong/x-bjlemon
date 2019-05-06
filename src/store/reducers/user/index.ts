@@ -1,4 +1,5 @@
 import { UserAction, UserActionTypes } from "./action";
+import { UserAccess } from "../../../api/getUserAction";
 
 const initState: UserState =  {
     lemon_sso_sessionid: localStorage.getItem('lemon_sso_sessionid') as string
@@ -11,10 +12,10 @@ export function userReducer(state = initState, action: UserAction) {
             ...state,
             ...action.user
         }
-        case UserActionTypes.SET_USER_AC:
+        case UserActionTypes.SET_USER_ACCESS:
         return {
             ...state,
-            userAc: action.ac
+            ...action.user
         }
         default:
         return state;
@@ -25,7 +26,7 @@ export function userReducer(state = initState, action: UserAction) {
 export interface UserState {
   lemon_sso_sessionid?: string |undefined;
   ssoUser?: UserInfo | undefined;
-  userAc?: any;
+  access?: UserAccess;
 }
 
 export interface UserInfo {

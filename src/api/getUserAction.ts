@@ -7,10 +7,10 @@ export function getUserAction() {
 
 interface UserAction {
     state: string;
-    user: AcAction;
+    user: UserAccess;
   }
   
-  export interface AcAction {
+  export interface UserAccess {
     teaPass: string;
     teaCode: string;
     sSOId: number;

@@ -5,11 +5,17 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import store from './store';
 import 'normalize.css/normalize.css';
+import zhCN from 'antd/lib/locale-provider/zh_CN';
+import { LocaleProvider } from 'antd';
 
 ReactDOM.render(
-    <Provider store={store}>
-        <App />
-    </Provider>
+    <LocaleProvider
+        locale={zhCN}
+    >
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </LocaleProvider>
     ,
     document.getElementById('root')
 );

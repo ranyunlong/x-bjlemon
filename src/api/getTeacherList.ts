@@ -2,7 +2,7 @@ import { http } from "./base";
 
 
 /**
- * 获取老师列表
+ * 获取助教老师列表
  */
 export function getTeacherList() {
     return http.post<TeacherInfo[]>('/teacher/loadAll.action')

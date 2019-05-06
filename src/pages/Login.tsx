@@ -1,96 +1,127 @@
-import React, { Component } from 'react';
+import React, { Component, FormEvent } from 'react';
+import { Button, Layout, Card, Form, Input } from 'antd';
 import './Login.less';
-import { FormControl, InputLabel, Input , Paper, Button, withStyles, Avatar, CssBaseline, Typography, FormControlLabel, Checkbox } from '@material-ui/core';
-import PropTypes from 'prop-types';
+import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { connect } from 'react-redux';
+import { UserState } from '../store/reducers/user';
+import { AccoundLoginParams } from '../api/login';
+import { LoginAction } from '../store/reducers/user/action';
+import { Location, History } from 'history';
 
-class Login extends Component<IProp, Readonly<IState>> {
-    static propTypes = {
-        classes: PropTypes.object.isRequired
-    };
-    readonly state: IState = {}
+interface ILoginProps {
+    form: WrappedFormUtils;
+    login: (params: AccoundLoginParams) => void;
+    user: UserState;
+    location: Location;
+    history: History;
+}
 
-    render() {
-        const { classes } = this.props;
-        return (
-            <div className="login-page">
-                <main className={classes.main}>
-                    <CssBaseline />
-                    <Paper className={classes.paper}>
-                        <Typography component="h1" variant="h5">
-                            登录
-                        </Typography>
-                        <form className={classes.form}>
-                            <FormControl margin="normal" required fullWidth>
-                                <InputLabel htmlFor="account">账号</InputLabel>
-                                <Input id="account" name="account" autoComplete="off" autoFocus />
-                            </FormControl>
-                            <FormControl margin="normal" required fullWidth>
-                                <InputLabel htmlFor="password">密码</InputLabel>
-                                <Input name="password" type="password" id="password" autoComplete="off" />
-                            </FormControl>
-                            <FormControlLabel
-                                control={<Checkbox value="remember" color="primary" />}
-                                label="记住密码"
-                            />
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                color="primary"
-                                className={classes.submit}
-                            >
-                                登陆
-                            </Button>
-                        </form>
-                    </Paper>
-                </main>
-            </div>
-        )
+interface ILoginState {
+    loading: boolean;
+}
+
+class Login extends Component<ILoginProps, Readonly<ILoginState>> {
+    readonly state: ILoginState = {
+        loading: false
     }
 
+
+    componentWillUpdate(nextProps: ILoginProps) {
+        if (nextProps.user.lemon_sso_sessionid) {
+            this.props.history.replace('/x/')
+        }
+    }
+
+    componentWillMount() {
+        if (this.props.user.lemon_sso_sessionid) {
+            this.props.history.replace('/x/')
+        }
+    }
+    public render() {
+        const { getFieldDecorator } = this.props.form
+        return (
+            <Layout className="login-page">
+                <Card
+                    title="登录"
+                    style={{
+                        width: 350
+                    }}
+                >
+                    <Form
+                        onSubmit={this.handleLogin.bind(this)}
+                    >
+                        <Form.Item
+                            label="账号"
+                        >
+                            {
+                                getFieldDecorator('account', {
+                                    rules: [
+                                        { required: true, message: '账号必须' }
+                                    ]
+                                })(
+                                    <Input
+                                        placeholder="请输入账号"
+                                    />
+                                )
+                            }
+                        </Form.Item>
+
+                        <Form.Item
+                            label="密码"
+                        >
+                            {
+                                getFieldDecorator('password', {
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '密码必须'
+                                        }
+                                    ]
+                                })(
+                                    <Input
+                                        placeholder="请输入密码"
+                                        type="password"
+                                    />
+                                )
+                            }
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button loading={!this.props.user.lemon_sso_sessionid && this.state.loading} htmlType="submit" block type="primary">登录</Button>
+                        </Form.Item>
+                    </Form>
+                </Card>
+            </Layout>
+        );
+    }
+
+    public handleLogin(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault()
+        this.props.form.validateFields((valid, value) => {
+            if (!valid) {
+                this.setState({
+                    loading: true
+                })
+                this.props.login(value)
+            }
+        })
+    }
 }
 
-const styles: any = (theme: any) => ({
-    main: {
-        width: 'auto',
-        display: 'block', // Fix IE 11 issue.
-        marginLeft: theme.spacing.unit * 3,
-        marginRight: theme.spacing.unit * 3,
-        backgroundImage: '../images/login-bg.jpg',
-        [theme.breakpoints.up(400 + theme.spacing.unit * 3 * 2)]: {
-            width: 400,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-        },
-    },
-    paper: {
-        marginTop: theme.spacing.unit * 24,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: `${theme.spacing.unit * 2}px ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
-    },
-    avatar: {
-        margin: theme.spacing.unit,
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
-        width: '100%', // Fix IE 11 issue.
-        marginTop: theme.spacing.unit,
-    },
-    submit: {
-        marginTop: theme.spacing.unit * 3,
-    },
-});
+const LoginPage = Form.create({
+    name: 'login-page'
+})(Login)
 
-export default withStyles(styles, { withTheme: true })(Login)
+export default connect(
+    (state: { user: UserState }) => ({
+        user: state.user
+    }),
+    (dispatch: any) => ({
+        login(parmas: AccoundLoginParams) {
+            dispatch(new LoginAction().getAciton(parmas))
+        }
+    })
+)(
+    LoginPage
+)
 
-
-
-interface IProp {
-    classes: any;
-}
-
-interface IState {
-
-}

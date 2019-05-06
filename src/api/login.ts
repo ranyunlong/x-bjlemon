@@ -14,7 +14,7 @@ export function phoneLogin(params: PhoneLoginParams) {
  * 账号登录
  */
 export function accountLogin(data: AccoundLoginParams) {
-    return center.post<{[K in keyof UserState]: UserState[K]}>('/doLogin', {
+    return center.post<{[K in keyof UserState]: UserState[K]} & {msg: string; state: 'fail'}>('/doLogin', {
         ...data,
         redirect_url: ''
     })
