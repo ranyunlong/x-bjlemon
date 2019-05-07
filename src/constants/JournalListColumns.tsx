@@ -2,12 +2,14 @@ import React from 'react';
 import { ColumnProps } from "antd/lib/table";
 import { Divider } from 'antd';
 import { JournalInfo } from '../api/getJournalList';
+import { JournalList } from '../pages/x/journal/JournalList';
+import { htmlToMarkdown, htmlToMarkdown2 } from '../utils/htmlToMarkdown';
 
 /**
  * 教学日志列表表格项目
  * @param this
  */
-export function getJournalListColumns() {
+export function getJournalListColumns(this: JournalList) {
     const JournalListColumns: ColumnProps<JournalInfo>[] = [
         {
             title: 'ID',
@@ -57,14 +59,30 @@ export function getJournalListColumns() {
             width: 120,
             fixed: 'right',
             align: 'center',
-            render: () => {
+            render: (text, record: JournalInfo) => {
                 return (
                     <div style={{
                         display: 'flex',
                         justifyContent: 'space-around',
                         alignItems: 'center'
                     }}>
-                        <a href="javascript:;">编辑</a>
+                        <a 
+                            onClick={() => {
+                                const { khWork, skName, skPlan, skTime } = record
+                                this.props.form.setFieldsValue({
+                                    khWork: htmlToMarkdown2(khWork),
+                                    skName,
+                                    skPlan,
+                                    skTime
+                                });
+                                this.setState({
+                                    modalTitle: '编辑日志'
+                                })
+                            }} 
+                            href="javascript:;"
+                        >
+                            编辑
+                        </a>
                         <Divider type="vertical" />
                         <a style={{color: 'red'}} href="javascript:;">删除</a>
                     </div>

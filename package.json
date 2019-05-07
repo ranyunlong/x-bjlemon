@@ -24,6 +24,7 @@
     "draft-js": "^0.10.5",
     "element-react": "^1.4.33",
     "element-theme-default": "^1.4.13",
+    "html-markdown": "^1.0.17",
     "html2markdown": "^1.1.0",
     "markdown-it": "^8.4.2",
     "normalize.css": "^8.0.1",

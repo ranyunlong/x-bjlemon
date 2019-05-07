@@ -1,6 +1,6 @@
 import './Journal.less';
 import React, { Component } from 'react';
-import { Layout, Row, Col, Select, Table } from 'antd';
+import { Layout, Row, Col, Select, Table, Pagination, Modal, Form, Input, Button } from 'antd';
 import { colStyle, span } from '../../../constants/searchRowCol';
 import { getClassList, ClassInfo } from '../../../api/getClassList';
 import { getUserAction } from '../../../api/getUserAction';
@@ -12,6 +12,9 @@ import { connect } from 'react-redux';
 import { TabPane, setPanesAction } from '../../../store/reducers/xsystem/action';
 import { Reducers } from '../../../store';
 import { bindLifecycle } from 'react-keep-alive';
+import CodeMirror from '../../../components/CodeMirror'
+import { WrappedFormUtils } from 'antd/lib/form/Form';
+import { markdownToHtml } from '../../../utils/markdownToHtml';
 
 
 interface IJournalListProps {
@@ -20,6 +23,7 @@ interface IJournalListProps {
     setPanes(panes: TabPane[], activePane: string): void;
     panes: TabPane[];
     activePane: string;
+    form: WrappedFormUtils;
 }
 
 interface IJournalListState {
@@ -30,16 +34,18 @@ interface IJournalListState {
     journalList: JournalInfo[];
     classActiveId?: number;
     loading?: boolean;
+    modalTitle?: string | null | undefined;
 }
 
 @bindLifecycle
-class JournalList extends Component<IJournalListProps, IJournalListState> {
+export class JournalList extends Component<IJournalListProps, IJournalListState> {
     readonly state: IJournalListState = {
         classList: [],
         total: 0,
         page: 1,
         rows: 20,
-        journalList: []
+        journalList: [],
+        modalTitle: null
     }
 
     public renderTable() {
@@ -61,6 +67,109 @@ class JournalList extends Component<IJournalListProps, IJournalListState> {
                     dataSource={journalList}
                 />
             </div>
+        )
+    }
+
+    public renderModal() {
+        const { modalTitle } = this.state
+        const { getFieldDecorator } = this.props.form
+        return (
+            <Modal
+                width={700}
+                title={modalTitle}
+                visible={!!modalTitle}
+                maskClosable={false}
+                onOk={() => {
+                    this.props.form.validateFields((e, value) => {
+                        if (!e) {
+                            value.khWork = markdownToHtml(value.khWork || '').replace(/(\r|\n)/g, '')
+                        }
+                    })
+                }}
+                onCancel={() => {
+                    this.setState({
+                        modalTitle: null
+                    })
+                }}
+                
+            >
+                <Form>
+                    <Form.Item
+                        label="课程名称"
+                    >
+                        {
+                            getFieldDecorator('skName', {
+                                rules: [
+                                    {required: true, message: '课程名称必须'}
+                                ]
+                            })(
+                                <Input
+                                    placeholder="课程名称"
+                                />
+                            )
+                        }
+                        
+                    </Form.Item>
+
+                    <Form.Item
+                        label="上课时长"
+                    >
+                        {
+                            getFieldDecorator('skTime', {
+                                rules: [
+                                    {required: true, message: '上课时长必须'}
+                                ]
+                            })(
+                                <Select>
+                                    <Select.Option value="2小时">2小时</Select.Option>
+                                    <Select.Option value="2.5小时">2.5小时</Select.Option>
+                                    <Select.Option value="3小时">3小时</Select.Option>
+                                </Select>
+                            )
+                        }
+                        
+                    </Form.Item>
+
+                    <Form.Item
+                        label="授课计划"
+                    >
+                        {
+                            getFieldDecorator('skPlan', {
+                                rules: [
+                                    {required: true, message: '授课计划必须'}
+                                ],
+                                trigger: 'onBlur',
+                                valuePropName: 'value'
+                            })(
+                                <CodeMirror
+                                    style={{
+                                        lineHeight: '22px',
+                                        height: 200
+                                    }}
+                                />
+                            )
+                        }
+                    </Form.Item>
+
+                    <Form.Item
+                        label="当日作业"
+                    >
+                        {
+                            getFieldDecorator('khWork',{
+                                trigger: 'onBlur',
+                                valuePropName: 'value'
+                            })(
+                                <CodeMirror
+                                    style={{
+                                        lineHeight: '22px',
+                                        height: 200
+                                    }}
+                                />
+                            )
+                        }
+                    </Form.Item>
+                </Form>
+            </Modal>
         )
     }
 
@@ -117,6 +226,11 @@ class JournalList extends Component<IJournalListProps, IJournalListState> {
                     </Col>
                 </Row>
                 {this.renderTable()}
+                <div className="pager">
+                    <Pagination total={this.state.total} current={this.state.page} />
+                </div>
+
+                {this.renderModal()}
             </Layout>
         );
     }
@@ -133,6 +247,12 @@ class JournalList extends Component<IJournalListProps, IJournalListState> {
             this.setState({
                 classActiveId: undefined
             })
+        }
+    }
+
+    componentDidUpdate(prevProps: IJournalListProps) {
+        if (prevProps.location.search !== this.props.location.search) {
+            this.getJournalList()
         }
     }
 
@@ -175,11 +295,7 @@ class JournalList extends Component<IJournalListProps, IJournalListState> {
         }
     }
 
-    componentDidUpdate(prevProps: IJournalListProps) {
-        if (prevProps.location.search !== this.props.location.search) {
-            this.getJournalList()
-        }
-    }
+    
     
 
     /**
@@ -200,6 +316,8 @@ class JournalList extends Component<IJournalListProps, IJournalListState> {
 }
 
 
+const JournalListPage = Form.create({name: 'JournalList'})(JournalList)
+
 export default connect(
     (state: Reducers)=> ({
         panes: state.xSystem.panes,
@@ -210,4 +328,4 @@ export default connect(
 			dispatch(new setPanesAction(panes, activePane).getAction())
 		},
     })
-)(JournalList);
+)(JournalListPage as any);
